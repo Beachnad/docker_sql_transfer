@@ -1,0 +1,7 @@
+version: 2.0
+
+services:
+  db:
+    image: postgres:12
+    environment:
+      POSTGRES_PASS=postgres
