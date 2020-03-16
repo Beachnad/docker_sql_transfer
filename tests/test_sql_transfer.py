@@ -8,13 +8,14 @@ import sqlalchemy
 import pandas as pd
 import pyodbc
 from time import sleep
+import os
 
 # CONSTANTS ============================================================================================================
-POSTGRES_IMAGE = 'postgres:12'
+POSTGRES_IMAGE = os.getenv('POSTGRES_TEST_IMAGE')
 POSTGRES_CONTAINER_NAME = 'postgres-database-01'
 POSTGRES_PASSWORD = 'postgres'
 
-SQL_SERVER_IMAGE = "mcr.microsoft.com/mssql/server:2017-latest"
+SQL_SERVER_IMAGE = os.getenv('SQL_SERVER_IMAGE')
 SQL_SERVER_CONTAINER_NAME = 'sql-server-database-01'
 SQL_SERVER_PASSWORD = 'yourStrong(!)Password'
 
@@ -43,6 +44,7 @@ def postgres_db():
     client = docker.from_env()
 
     kill_container(client, POSTGRES_CONTAINER_NAME)
+    log.info(f"Spinning up Postgres Docker image: {POSTGRES_IMAGE}")
     client.containers.run(POSTGRES_IMAGE,
                           name=POSTGRES_CONTAINER_NAME,
                           detach=True,
@@ -58,7 +60,7 @@ def sql_server_db():
     client = docker.from_env()
 
     kill_container(client, SQL_SERVER_CONTAINER_NAME)
-    log.info("Spinning up SQL Server Docker image.")
+    log.info(f"Spinning up SQL Server Docker image: {SQL_SERVER_IMAGE}")
     client.containers.run(SQL_SERVER_IMAGE,
                           name=SQL_SERVER_CONTAINER_NAME,
                           detach=True,

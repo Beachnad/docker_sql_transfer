@@ -15,10 +15,16 @@ printf "Starting a container for '%s'\\n" "$DOCKER_TAG"
 
 declare -r DOCKER_CONTAINER=$(docker run --rm -t -d "$DOCKER_TAG")
 
+export POSTGRES_TEST_IMAGE=postgres:12
+export SQL_SERVER_IMAGE=mcr.microsoft.com/mssql/server:2017-latest
+
 docker run \
   --rm \
   --network host \
-  -v "$(PWD)/tests:/tests" \
+  -v "$(pwd)/tests:/tests" \
   -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /var/lib/docker:/var/lib/docker \
+  -e POSTGRES_TEST_IMAGE=$POSTGRES_TEST_IMAGE \
+  -e SQL_SERVER_IMAGE=$SQL_SERVER_IMAGE \
   docker_sql_transfer:dev-test \
   pytest /tests -vrA --color=yes

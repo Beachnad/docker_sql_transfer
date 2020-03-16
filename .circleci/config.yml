@@ -1,18 +1,22 @@
 version: 2
 jobs:
- build:
-   machine: true
-   steps:
-     - run:
-         command: |
-           if [[ ${CIRCLE_SHELL_ENV} =~ "localbuild" ]]; then
-             mkdir -p /tmp/_circleci_local_build_repo
-           fi
+  build:
+    machine:
+      image: jpetazzo/dind
+      docker_layer_caching: true
+    steps:
+      - run: apt-get update && apt-get install -y git
 
-     - checkout
-     # start proprietary DB using private Docker image
-     # with credentials stored in the UI
+      - checkout
 
-     - run :
-        name: Build Image
-        command: docker run -it --rm --network host -v "$(PWD)/tests:/tests" -v /var/run/docker.sock:/var/run/docker.sock docker_sql_transfer:dev-test bash
+      - run:
+          name: 'Build Image'
+          command: docker build -t docker_sql_transfer:dev . && docker build -f DockerfileTest --rm -t docker_sql_transfer:dev-test .
+
+      - run:
+          name: "Pull images for test script"
+          command: docker pull postgres:12 && docker pull mcr.microsoft.com/mssql/server:2017-latest
+
+      - run:
+          name: 'Test'
+          command: bash -e test.sh
