@@ -26,5 +26,6 @@ docker run \
   -v /var/lib/docker:/var/lib/docker \
   -e POSTGRES_TEST_IMAGE=$POSTGRES_TEST_IMAGE \
   -e SQL_SERVER_IMAGE=$SQL_SERVER_IMAGE \
+  --entrypoint pytest \
   docker_sql_transfer:dev-test \
-  pytest /tests -vrA --color=yes
+  /tests -vrA --color=yes
