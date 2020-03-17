@@ -21,4 +21,4 @@ RUN pip install \
 RUN mkdir /tests
 COPY ./tests /tests
 
-CMD ['pytest', '/tests', '--verbose']
+ENTRYPOINT ['pytest']

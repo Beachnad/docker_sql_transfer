@@ -26,3 +26,5 @@ COPY sql_transfer/ /sql_transfer
 COPY requirements.txt requirements.txt
 COPY openssl.cnf /etc/ssl/openssl.cnf
 RUN pip install -r requirements.txt && pip freeze
+
+ENTRYPOINT ["python", "sql_transfer/sql_transfer.py"]
