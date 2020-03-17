@@ -22,14 +22,6 @@ mysql-up:
 mysql-down:
 	docker rm -f mysql-test
 
-#infra-tests: build
-#	docker run -it --rm --network host docker_sql_transfer:dev python sql_transfer.py \
-#		--from-conn-string "mssql+pyodbc://appguest@192.168.2.41/MPC?driver=ODBC+Driver+17+for+SQL+Server" \
-#		--to-conn-string "postgresql+psycopg2://postgres:postgres@localhost:5432" \
-#		--sql "SELECT TOP 100 * FROM PatientProfile" \
-#		--destination-table "patients" \
-#		--mode "append"
-
 build-test: build
 	docker build -f DockerfileTest --rm -t docker_sql_transfer:dev-test .
 
