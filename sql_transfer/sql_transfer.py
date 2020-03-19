@@ -17,8 +17,9 @@ def transfer(
     from_engine = create_engine(from_conn_string)
     results = pd.read_sql(sql, from_engine)
 
-    to_engine = create_engine(to_conn_string)
-    results.to_sql(destination_table, to_engine, if_exists=mode, index=False, schema=schema)
+    if results.shape[0] > 0:
+        to_engine = create_engine(to_conn_string)
+        results.to_sql(destination_table, to_engine, if_exists=mode, index=False, schema=schema)
 
 
 @click.command()

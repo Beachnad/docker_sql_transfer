@@ -170,7 +170,16 @@ def test_transfer(postgres_db, sql_server_db, postgres_engine):
     df = pd.read_sql("SELECT * FROM cars", postgres_engine)
     assert df.equals(CARS_DF)
 
-    transfer(sql_server_db, postgres_db, "SELECT * FROM cars", 'cars', 'replace', schema = 'test')
+    transfer(sql_server_db, postgres_db, "SELECT * FROM cars", 'cars', 'replace', schema='test')
     df = pd.read_sql("SELECT * FROM test.cars", postgres_engine)
     assert df.equals(CARS_DF)
+
+    transfer(sql_server_db, postgres_db, "SELECT * FROM cars WHERE 0 = 1", 'empty_cars', 'replace')
+
+    tables = pd.read_sql("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';",
+                         postgres_engine)['table_name'].tolist()
+    log.info(f"table variable: {tables}")
+    log.info(f"Tables: {', '.join(tables)}")
+    assert 'empty_cars' not in tables
+    assert 'cars' in tables
 
