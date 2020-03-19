@@ -84,6 +84,7 @@ def postgres_engine(postgres_db):
         except sqlalchemy.exc.InterfaceError:
             attempt += 1
             sleep(1)
+    eng.execute("CREATE SCHEMA test")
     return eng
 
 
@@ -98,6 +99,7 @@ def sql_server_engine(sql_server_db):
         except sqlalchemy.exc.InterfaceError:
             attempt += 1
             sleep(1)
+    eng.execute("CREATE SCHEMA test")
     return eng
 
 
@@ -166,5 +168,9 @@ def test_cars_db(cars_db):
 def test_transfer(postgres_db, sql_server_db, postgres_engine):
     transfer(sql_server_db, postgres_db, "SELECT * FROM cars", 'cars', 'replace')
     df = pd.read_sql("SELECT * FROM cars", postgres_engine)
+    assert df.equals(CARS_DF)
+
+    transfer(sql_server_db, postgres_db, "SELECT * FROM cars", 'cars', 'replace', schema = 'test')
+    df = pd.read_sql("SELECT * FROM test.cars", postgres_engine)
     assert df.equals(CARS_DF)
 
