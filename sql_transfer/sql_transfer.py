@@ -1,6 +1,11 @@
 import click
 import pandas as pd
 from sqlalchemy import create_engine
+import logging
+from contextlib import closing
+
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger()
 
 
 def transfer(
@@ -14,12 +19,23 @@ def transfer(
     """
     Transfers data from one database to another.
     """
-    from_engine = create_engine(from_conn_string)
-    results = pd.read_sql(sql, from_engine)
+    from_engine = create_engine(from_conn_string).execution_options()
+    with closing(from_engine.connect()) as conn:
+        results = pd.read_sql(sql, conn)
+
+    log.info(f"{results.shape[0]} rows and {results.shape[1]} columns in results from executing query:\n{sql}")
+    log.info(f"{results.head(5)}")
+    log.info(f"{results.tail(5)}")
+    log.info(results.info())
 
     if results.shape[0] > 0:
+        log.info(f"Inserting data into table {destination_table} using mode {mode} in schema {schema or '{no schema specified - using database default}'}")
         to_engine = create_engine(to_conn_string)
-        results.to_sql(destination_table, to_engine, if_exists=mode, index=False, schema=schema)
+
+        with closing(to_engine.connect()) as conn:
+            results.to_sql(destination_table, conn, if_exists=mode, index=False, schema=schema)
+    else:
+        log.info("There were no results, skipping data insertion.")
 
 
 @click.command()

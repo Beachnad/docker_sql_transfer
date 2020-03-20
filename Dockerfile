@@ -11,6 +11,7 @@ RUN \
     ca-certificates \
     # These are python nodule dependencies
     unixodbc-dev \
+    default-libmysqlclient-dev \
     gcc \
   && \
   curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
