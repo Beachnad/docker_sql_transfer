@@ -17,6 +17,7 @@ declare -r DOCKER_CONTAINER=$(docker run --rm -t -d "$DOCKER_TAG")
 
 export POSTGRES_TEST_IMAGE=postgres:12
 export SQL_SERVER_IMAGE=mcr.microsoft.com/mssql/server:2017-latest
+export MYSQL_IMAGE=mysql:8.0
 
 docker run \
   --rm \
@@ -26,6 +27,7 @@ docker run \
   -v /var/lib/docker:/var/lib/docker \
   -e POSTGRES_TEST_IMAGE=$POSTGRES_TEST_IMAGE \
   -e SQL_SERVER_IMAGE=$SQL_SERVER_IMAGE \
+  -e MYSQL_IMAGE=$MYSQL_IMAGE \
   --entrypoint pytest \
   docker_sql_transfer:dev-test \
   /tests -vrA --color=yes
